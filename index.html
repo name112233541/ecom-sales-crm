@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>电商销售台 · Ecom Sales CRM</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">E</div>
+        <div>
+          <h2>电商销售台</h2>
+          <p>Ecom Sales CRM · MVP</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <button type="button" class="nav-item active" data-view="dashboard">
+          工作台<span id="navDueBadge" class="nav-badge hidden">0</span>
+        </button>
+        <button type="button" class="nav-item" data-view="customers">客户</button>
+        <button type="button" class="nav-item" data-view="followups">
+          跟进<span id="navFollowupBadge" class="nav-badge hidden">0</span>
+        </button>
+        <button type="button" class="nav-item" data-view="orders">
+          订单<span id="navOrderBadge" class="nav-badge hidden">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="save-note">数据保存在当前浏览器</div>
+        <button type="button" class="ghost-dark" id="exportBtn">导出 JSON 备份</button>
+        <button type="button" class="ghost-dark" id="importBtn">导入 JSON 备份</button>
+        <button type="button" class="ghost-dark danger-text" id="resetBtn">重置演示数据</button>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ECOM SALES WORKSPACE</p>
+          <h1 id="pageTitle">工作台</h1>
+          <p id="pageSubtitle">今天最值得做的事，都在这里。</p>
+        </div>
+        <div class="top-actions">
+          <label class="search-box">
+            <input id="globalSearch" type="search" placeholder="搜索客户、电话、产品...">
+          </label>
+          <button type="button" class="btn primary" id="addCustomerBtn">+ 新增客户</button>
+        </div>
+      </header>
+
+      <section id="view-dashboard" class="view active">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">客户总数</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-note" id="kpiTotalNote">—</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">待跟进</div>
+            <div class="kpi-value" id="kpiDue">0</div>
+            <div class="kpi-note" id="kpiDueNote">—</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">本月有效订单</div>
+            <div class="kpi-value" id="kpiWon">0</div>
+            <div class="kpi-note" id="kpiWonNote">—</div>
+          </div>
+          <div class="kpi accent-kpi">
+            <div class="kpi-label">本月成交额</div>
+            <div class="kpi-value" id="kpiRevenue">¥0</div>
+            <div class="kpi-note" id="kpiRevenueNote">—</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <div><h3>销售漏斗</h3><p>按当前客户阶段统计，不是严格累计</p></div>
+            </div>
+            <div id="funnel" class="funnel"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div><h3>待跟进</h3><p>逾期和今天需要联系</p></div>
+              <button type="button" class="btn small" data-view-link="followups">查看全部</button>
+            </div>
+            <div id="todayList"></div>
+          </div>
+        </div>
+
+        <div class="panel recent-panel">
+          <div class="panel-head">
+            <div><h3>最近动态</h3><p>团队最新跟进记录</p></div>
+          </div>
+          <div id="recentList"></div>
+        </div>
+      </section>
+
+      <section id="view-customers" class="view">
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3>客户管理</h3><p id="customerCountLabel">—</p></div>
+            <div class="filters">
+              <select id="statusFilter" class="select-compact" aria-label="按状态筛选">
+                <option value="all">全部状态</option>
+                <option value="new">新线索</option>
+                <option value="contacted">已联系</option>
+                <option value="qualified">有意向</option>
+                <option value="quoted">已报价</option>
+                <option value="won">已成交</option>
+                <option value="lost">已流失</option>
+              </select>
+              <select id="sourceFilter" class="select-compact" aria-label="按来源筛选">
+                <option value="all">全部来源</option>
+                <option value="抖音">抖音</option>
+                <option value="小红书">小红书</option>
+                <option value="视频号">视频号</option>
+                <option value="广告投放">广告投放</option>
+                <option value="转介绍">转介绍</option>
+                <option value="私域">私域</option>
+                <option value="其他">其他</option>
+              </select>
+              <button type="button" class="btn small" id="exportCsvBtn">导出 CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>客户</th>
+                  <th>来源</th>
+                  <th>意向产品</th>
+                  <th>状态</th>
+                  <th>优先级</th>
+                  <th>下次跟进</th>
+                  <th>负责人</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="customerTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-followups" class="view">
+        <div class="kpi-grid three">
+          <div class="kpi">
+            <div class="kpi-label">已逾期</div>
+            <div class="kpi-value" id="followupOverdue">0</div>
+            <div class="kpi-note">需要优先联系</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">今天跟进</div>
+            <div class="kpi-value" id="followupToday">0</div>
+            <div class="kpi-note">今天约定好的客户</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">未来 7 天</div>
+            <div class="kpi-value" id="followupUpcoming">0</div>
+            <div class="kpi-note">提前准备，不要临时抱佛脚</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3>跟进队列</h3><p>按逾期、今天、未来 7 天分组</p></div>
+            <button type="button" class="btn primary small" id="newFollowupBtn">+ 新增跟进</button>
+          </div>
+          <div id="followupGroups"></div>
+        </div>
+      </section>
+
+      <section id="view-orders" class="view">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">订单数</div>
+            <div class="kpi-value" id="orderTotal">0</div>
+            <div class="kpi-note">全部订单</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">待付款</div>
+            <div class="kpi-value" id="orderPendingAmount">¥0</div>
+            <div class="kpi-note">需要催付的金额</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">已收款</div>
+            <div class="kpi-value" id="orderReceivedAmount">¥0</div>
+            <div class="kpi-note">已付款/已发货/已完成</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">退款</div>
+            <div class="kpi-value" id="orderRefundAmount">¥0</div>
+            <div class="kpi-note">需要复盘的金额</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3>订单</h3><p>从报价到回款，记录每一笔成交</p></div>
+            <div class="filters">
+              <select id="orderStatusFilter" class="select-compact" aria-label="按订单状态筛选">
+                <option value="all">全部状态</option>
+                <option value="pending">待付款</option>
+                <option value="paid">已付款</option>
+                <option value="shipped">已发货</option>
+                <option value="completed">已完成</option>
+                <option value="refunded">已退款</option>
+              </select>
+              <button type="button" class="btn primary small" id="newOrderBtn">+ 新建订单</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>客户</th>
+                  <th>产品</th>
+                  <th>金额</th>
+                  <th>状态</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="orderTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside id="customerDrawer" class="drawer hidden" aria-label="客户详情">
+    <div class="drawer-head">
+      <div>
+        <p class="eyebrow">CUSTOMER DETAIL</p>
+        <h2 id="drawerName">客户</h2>
+        <div id="drawerStatus"></div>
+      </div>
+      <button type="button" class="icon-btn" data-action="close-panels" aria-label="关闭">×</button>
+    </div>
+    <div id="drawerBody"></div>
+  </aside>
+
+  <div id="overlay" class="overlay hidden"></div>
+
+  <div id="customerModal" class="modal hidden">
+    <div class="modal-head">
+      <h2 id="customerModalTitle">新增客户</h2>
+      <button type="button" class="icon-btn" data-action="close-modals" aria-label="关闭">×</button>
+    </div>
+    <form id="customerForm">
+      <input id="cfId" type="hidden">
+      <div class="form-grid">
+        <label class="field"><span>姓名 *</span><input id="cfName" required maxlength="40" placeholder="例如：林晓雨"></label>
+        <label class="field"><span>手机</span><input id="cfPhone" maxlength="30" placeholder="选填"></label>
+        <label class="field"><span>微信</span><input id="cfWechat" maxlength="60" placeholder="选填"></label>
+        <label class="field"><span>来源</span>
+          <select id="cfSource">
+            <option value="抖音">抖音</option>
+            <option value="小红书">小红书</option>
+            <option value="视频号">视频号</option>
+            <option value="广告投放">广告投放</option>
+            <option value="转介绍">转介绍</option>
+            <option value="私域">私域</option>
+            <option value="其他">其他</option>
+          </select>
+        </label>
+        <label class="field"><span>意向产品</span><input id="cfProduct" maxlength="80" placeholder="例如：夏季防晒衣"></label>
+        <label class="field"><span>预算</span><input id="cfBudget" type="number" min="0" step="0.01" placeholder="0"></label>
+        <label class="field"><span>状态</span>
+          <select id="cfStatus">
+            <option value="new">新线索</option>
+            <option value="contacted">已联系</option>
+            <option value="qualified">有意向</option>
+            <option value="quoted">已报价</option>
+            <option value="won">已成交</option>
+            <option value="lost">已流失</option>
+          </select>
+        </label>
+        <label class="field"><span>优先级</span>
+          <select id="cfPriority">
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+        </label>
+        <label class="field"><span>负责人</span><input id="cfOwner" maxlength="30" placeholder="例如：小周"></label>
+        <label class="field"><span>下次跟进</span><input id="cfNextFollowUp" type="date"></label>
+        <label class="field span-2"><span>标签（逗号分隔）</span><input id="cfTags" maxlength="120" placeholder="高意向, 防晒, 老客"></label>
+        <label class="field span-2"><span>备注</span><textarea id="cfNotes" rows="3" maxlength="500" placeholder="记录客户需求、顾虑和沟通重点"></textarea></label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" data-action="close-modals">取消</button>
+        <button type="submit" class="btn primary">保存客户</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="followupModal" class="modal hidden">
+    <div class="modal-head">
+      <h2>新增跟进</h2>
+      <button type="button" class="icon-btn" data-action="close-modals" aria-label="关闭">×</button>
+    </div>
+    <form id="followupForm">
+      <div class="form-grid">
+        <label class="field span-2"><span>客户 *</span><select id="ffCustomer" required></select></label>
+        <label class="field"><span>沟通方式</span>
+          <select id="ffType">
+            <option value="微信">微信</option>
+            <option value="电话">电话</option>
+            <option value="面谈">面谈</option>
+            <option value="直播">直播</option>
+            <option value="其他">其他</option>
+          </select>
+        </label>
+        <label class="field"><span>下次跟进</span><input id="ffNextFollowUp" type="date"></label>
+        <label class="field span-2"><span>沟通内容 *</span><textarea id="ffContent" rows="4" required maxlength="800" placeholder="客户说了什么？顾虑是什么？下一步约定是什么？"></textarea></label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" data-action="close-modals">取消</button>
+        <button type="submit" class="btn primary">保存跟进</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="orderModal" class="modal hidden">
+    <div class="modal-head">
+      <h2>新建订单</h2>
+      <button type="button" class="icon-btn" data-action="close-modals" aria-label="关闭">×</button>
+    </div>
+    <form id="orderForm">
+      <div class="form-grid">
+        <label class="field span-2"><span>客户 *</span><select id="ofCustomer" required></select></label>
+        <label class="field"><span>产品 *</span><input id="ofProduct" required maxlength="100" placeholder="例如：防晒衣 x 2"></label>
+        <label class="field"><span>金额 *</span><input id="ofAmount" type="number" required min="0.01" step="0.01" placeholder="0"></label>
+        <label class="field"><span>订单状态</span>
+          <select id="ofStatus">
+            <option value="pending">待付款</option>
+            <option value="paid">已付款</option>
+            <option value="shipped">已发货</option>
+            <option value="completed">已完成</option>
+            <option value="refunded">已退款</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" data-action="close-modals">取消</button>
+        <button type="submit" class="btn primary">保存订单</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
