@@ -20,6 +20,9 @@ jobs:
       - name: Check JavaScript syntax
         run: node --check app.js
 
+      - name: Static contract checks
+        run: node tests/static-check.mjs
+
       - name: Check required files
         run: |
           test -f index.html
