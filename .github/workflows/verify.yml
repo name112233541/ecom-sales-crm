@@ -1,0 +1,29 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  syntax-and-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check JavaScript syntax
+        run: node --check app.js
+
+      - name: Check required files
+        run: |
+          test -f index.html
+          test -f styles.css
+          test -f app.js
+          grep -q 'styles.css' index.html
+          grep -q 'app.js' index.html
