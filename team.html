@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Agent 工作台 · 电商销售台</title>
+  <style>
+    :root { --bg:#f4f6fb; --surface:#fff; --ink:#172033; --muted:#718096; --line:#e6eaf2; --accent:#ff6b4a; --navy:#111827; --green:#0f9d8a; --shadow:0 10px 30px rgba(17,24,39,.06); }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif; }
+    button,input,select,textarea { font:inherit; }
+    button { cursor:pointer; }
+    .top { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; padding:24px 30px 18px; background:linear-gradient(180deg,#111827,#1f2937); color:#fff; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .logo { width:42px; height:42px; display:grid; place-items:center; border-radius:13px; background:linear-gradient(135deg,#ff9a76,#ff5a36); font-weight:900; font-size:19px; }
+    .brand h1 { margin:0; font-size:20px; letter-spacing:-.02em; }
+    .brand p { margin:4px 0 0; color:#9ca3af; font-size:11px; }
+    .top-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 13px; border:1px solid rgba(255,255,255,.16); border-radius:9px; background:rgba(255,255,255,.08); color:#fff; text-decoration:none; font-size:12px; font-weight:700; }
+    .btn:hover { background:rgba(255,255,255,.14); }
+    .btn.primary { border-color:#ff6b4a; background:#ff6b4a; }
+    .btn.dark { border-color:var(--line); background:#fff; color:var(--ink); }
+    .btn.small { padding:6px 9px; font-size:11px; }
+    .btn.danger { border-color:#fecaca; background:#fff5f5; color:#dc2626; }
+    main { max-width:1440px; margin:0 auto; padding:22px 30px 48px; }
+    .notice { display:flex; gap:10px; align-items:flex-start; margin-bottom:16px; padding:11px 14px; border:1px solid #bfdbfe; border-radius:11px; background:#eff6ff; color:#1e40af; font-size:12px; line-height:1.6; }
+    .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+    .stat { padding:16px; border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:var(--shadow); }
+    .stat span { display:block; color:var(--muted); font-size:11px; font-weight:700; }
+    .stat strong { display:block; margin-top:7px; font-size:26px; letter-spacing:-.04em; }
+    .section { margin-bottom:18px; padding:17px; border:1px solid var(--line); border-radius:15px; background:#fff; box-shadow:var(--shadow); }
+    .section-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; }
+    .section-head h2 { margin:0; font-size:15px; }
+    .section-head p { margin:4px 0 0; color:var(--muted); font-size:11px; }
+    .roles { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+    .role { padding:12px; border:1px solid var(--line); border-radius:12px; background:#fbfcff; }
+    .role .avatar { width:30px; height:30px; display:grid; place-items:center; border-radius:9px; background:#fff1ec; color:#c2410c; font-size:12px; font-weight:900; margin-bottom:8px; }
+    .role strong { display:block; font-size:12px; }
+    .role p { margin:5px 0 0; color:var(--muted); font-size:10px; line-height:1.5; }
+    .board { display:grid; grid-template-columns:repeat(4,minmax(220px,1fr)); gap:10px; overflow:auto; }
+    .column { min-height:180px; padding:10px; border:1px solid var(--line); border-radius:12px; background:#f8fafc; }
+    .column h3 { display:flex; justify-content:space-between; gap:8px; margin:0 0 9px; color:#475569; font-size:11px; }
+    .column h3 span { color:#94a3b8; }
+    .task { margin-bottom:8px; padding:10px; border:1px solid var(--line); border-radius:10px; background:#fff; box-shadow:0 2px 7px rgba(17,24,39,.03); }
+    .task-title { font-size:12px; font-weight:750; line-height:1.45; }
+    .task-meta { display:flex; justify-content:space-between; gap:8px; margin-top:7px; color:#94a3b8; font-size:10px; }
+    .task select { max-width:100%; padding:4px 5px; border:1px solid var(--line); border-radius:6px; background:#fff; color:#64748b; font-size:10px; }
+    .task .delete { border:0; background:transparent; color:#cbd5e1; font-size:15px; line-height:1; }
+    .task .delete:hover { color:#dc2626; }
+    .messages { display:grid; gap:9px; max-height:420px; overflow:auto; }
+    .message { display:flex; gap:9px; padding:9px 0; border-bottom:1px solid #f1f5f9; }
+    .message:last-child { border-bottom:0; }
+    .msg-avatar { width:28px; height:28px; flex:0 0 28px; display:grid; place-items:center; border-radius:9px; background:#eef2ff; color:#4f46e5; font-size:10px; font-weight:900; }
+    .msg-body { min-width:0; }
+    .msg-head { display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
+    .msg-head strong { font-size:11px; }
+    .msg-head span { color:#94a3b8; font-size:9px; }
+    .msg-body p { margin:4px 0 0; color:#475569; font-size:11px; line-height:1.6; white-space:pre-wrap; }
+    .footer-note { margin-top:16px; color:#94a3b8; font-size:10px; line-height:1.6; }
+    @media (max-width:1100px) { .roles { grid-template-columns:repeat(3,minmax(0,1fr)); } .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:760px) { .top { flex-direction:column; padding:18px 16px; } .top-actions { justify-content:flex-start; } main { padding:16px 14px 40px; } .roles { grid-template-columns:1fr 1fr; } .stats { grid-template-columns:1fr 1fr; } .board { grid-template-columns:repeat(4,240px); } .section { padding:13px; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div><h1>Agent 工作台</h1><p>团队角色 · 任务板 · 消息归档 · 本地 V1</p></div>
+    </div>
+    <div class="top-actions">
+      <a class="btn" href="./index.html">返回电商销售台</a>
+      <button class="btn" id="addMessageBtn" type="button">+ 记录消息</button>
+      <button class="btn primary" id="addTaskBtn" type="button">+ 新增任务</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="notice"><strong>说明：</strong>这是本地团队工作台 V1，用于记录角色、任务和团队消息。真正的实时 Agent 群聊和自动执行需要后端服务与模型 API，当前版本不会假装“在线自动运行”。</div>
+
+    <div class="stats">
+      <div class="stat"><span>团队角色</span><strong id="statAgents">5</strong></div>
+      <div class="stat"><span>任务总数</span><strong id="statTasks">0</strong></div>
+      <div class="stat"><span>进行中</span><strong id="statDoing">0</strong></div>
+      <div class="stat"><span>已完成</span><strong id="statDone">0</strong></div>
+    </div>
+
+    <section class="section">
+      <div class="section-head"><div><h2>团队角色</h2><p>每个人只负责自己的范围，避免职责重叠。</p></div></div>
+      <div class="roles" id="roles"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><div><h2>任务板</h2><p>点击任务下方状态可移动；新增任务会进入“待办”。</p></div><button class="btn dark small" id="exportBtn" type="button">导出记录</button></div>
+      <div class="board" id="board"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><div><h2>团队消息归档</h2><p>来自本轮 agent 的关键结论和 Lead 验收记录。</p></div></div>
+      <div class="messages" id="messages"></div>
+    </section>
+
+    <p class="footer-note">数据保存在当前浏览器 localStorage，键名：ecom_team_board_v1。换浏览器或清缓存会丢失，请定期导出记录。</p>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'ecom_team_board_v1';
+    const STATUSES = {
+      todo: { label: '待办' },
+      doing: { label: '进行中' },
+      review: { label: '待验收' },
+      done: { label: '已完成' }
+    };
+
+    const roles = [
+      { name: 'Lead', short: 'L', desc: '定方向、拆任务、验收、控制权限、对用户沟通' },
+      { name: 'market-analyst', short: 'M', desc: '客户画像、竞品、定价、获客渠道、7 天验证' },
+      { name: 'product-builder', short: 'P', desc: '产品范围、交付方式、验收标准、开发 backlog' },
+      { name: 'sales-strategist', short: 'S', desc: '卖点、报价、销售页、私信、异议处理' },
+      { name: 'delivery-qa', short: 'Q', desc: '上线检查、验收、bug 分级、数据安全 SOP' }
+    ];
+
+    const defaultTasks = [
+      { id: 't1', title: '市场分析：变现方向筛选', owner: 'market-analyst', status: 'done', note: '完成' },
+      { id: 't2', title: '产品化：7 天付费试跑包规格', owner: 'product-builder', status: 'done', note: '完成' },
+      { id: 't3', title: '首单销售包初版', owner: 'sales-strategist', status: 'done', note: '完成但被 Lead 打回' },
+      { id: 't4', title: '交付与 QA SOP', owner: 'delivery-qa', status: 'done', note: '完成' },
+      { id: 't5', title: '修正销售包：禁止多账号承诺', owner: 'sales-strategist', status: 'done', note: '已修正' },
+      { id: 't6', title: '一页式销售页 + 报价单', owner: 'sales-strategist', status: 'todo', note: '' },
+      { id: 't7', title: '客户版《当前系统能力边界》', owner: 'product-builder', status: 'todo', note: '' },
+      { id: 't8', title: '7 天诊断访谈提纲 + 脱敏模板 + 验收表', owner: 'delivery-qa', status: 'todo', note: '' },
+      { id: 't9', title: 'PWA 安装到桌面', owner: 'Lead', status: 'done', note: '已加入 manifest / service worker' },
+      { id: 't10', title: '团队 Agent 工作台 V1', owner: 'Lead', status: 'done', note: '本地任务板' },
+      { id: 't11', title: '客户 CSV 导入（真实数据）', owner: 'product-builder', status: 'doing', note: '本次上线' },
+      { id: 't12', title: 'Windows EXE 安装包', owner: 'product-builder', status: 'todo', note: '需 Windows 构建' },
+      { id: 't13', title: '实时 Agent 群聊后端', owner: 'Lead', status: 'todo', note: '需后端/模型 API' },
+      { id: 't14', title: '合规线索助手：去重/评分/话术草稿', owner: 'product-builder', status: 'todo', note: '不做爬虫/自动私信' }
+    ];
+
+    const defaultMessages = [
+      { id: 'm1', author: 'Lead', time: '2026-11-04 13:40', text: '团队已组建：市场分析、产品设计、销售文案、交付 QA 四个角色。所有 agent 禁止登录、安装、发布和联系真实客户。' },
+      { id: 'm2', author: 'market-analyst', time: '2026-11-04 14:05', text: '建议先卖“7 天成交漏损快诊”，不卖 SaaS。目标客户 3～10 人高客单电商团队；前 3 个验证名额 1,999 元。' },
+      { id: 'm3', author: 'product-builder', time: '2026-11-04 14:10', text: '当前 demo 是单浏览器 localStorage，不能承诺多人协作。试跑只能定位为单工作台验证。' },
+      { id: 'm4', author: 'sales-strategist', time: '2026-11-04 14:20', text: '首版销售包写了 5/20 个账号和 4,980 元正式部署，被 Lead 打回。' },
+      { id: 'm5', author: 'delivery-qa', time: '2026-11-04 14:25', text: '上线前必须检查：固定浏览器、数据持久化、JSON 恢复对账、单设备授权、每日备份。' },
+      { id: 'm6', author: 'Lead', time: '2026-11-04 14:30', text: '验收结论：首单只卖人工诊断，不卖多用户系统；demo 只做演示，不录真实客户数据。' }
+    ];
+
+    let data = loadData();
+
+    function uid(prefix) { return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6); }
+    function esc(value) { return String(value ?? '').replace(/[&<>"']/g, (ch) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch])); }
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.tasks) && Array.isArray(parsed.messages)) return parsed;
+        }
+      } catch (err) { console.warn(err); }
+      return { tasks: defaultTasks, messages: defaultMessages };
+    }
+
+    function saveData() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+      catch (err) { console.warn('save failed', err); }
+    }
+
+    function renderStats() {
+      document.getElementById('statAgents').textContent = roles.length;
+      document.getElementById('statTasks').textContent = data.tasks.length;
+      document.getElementById('statDoing').textContent = data.tasks.filter((t) => t.status === 'doing' || t.status === 'review').length;
+      document.getElementById('statDone').textContent = data.tasks.filter((t) => t.status === 'done').length;
+    }
+
+    function renderRoles() {
+      document.getElementById('roles').innerHTML = roles.map((r) => `<div class="role"><div class="avatar">${esc(r.short)}</div><strong>${esc(r.name)}</strong><p>${esc(r.desc)}</p></div>`).join('');
+    }
+
+    function renderBoard() {
+      const board = document.getElementById('board');
+      board.innerHTML = Object.entries(STATUSES).map(([key, meta]) => {
+        const tasks = data.tasks.filter((t) => t.status === key);
+        return `<div class="column"><h3>${meta.label}<span>${tasks.length}</span></h3>${tasks.map((t) => `
+          <div class="task">
+            <div class="task-title">${esc(t.title)}</div>
+            <div class="task-meta"><span>${esc(t.owner)}</span><button class="delete" type="button" data-delete="${esc(t.id)}" title="删除">×</button></div>
+            <select data-status="${esc(t.id)}">${Object.entries(STATUSES).map(([k, v]) => `<option value="${k}" ${k === t.status ? 'selected' : ''}>${v.label}</option>`).join('')}</select>
+            ${t.note ? `<div class="task-meta"><span>${esc(t.note)}</span></div>` : ''}
+          </div>`).join('') || '<div class="task"><div class="task-title" style="color:#94a3b8;font-weight:500">暂无任务</div></div>'}</div>`;
+      }).join('');
+    }
+
+    function renderMessages() {
+      document.getElementById('messages').innerHTML = data.messages.slice().reverse().map((m) => `
+        <div class="message">
+          <div class="msg-avatar">${esc((m.author || '?').slice(0, 1).toUpperCase())}</div>
+          <div class="msg-body"><div class="msg-head"><strong>${esc(m.author)}</strong><span>${esc(m.time)}</span></div><p>${esc(m.text)}</p></div>
+        </div>`).join('');
+    }
+
+    function renderAll() { renderStats(); renderRoles(); renderBoard(); renderMessages(); }
+
+    document.getElementById('addTaskBtn').addEventListener('click', () => {
+      const title = prompt('任务标题：');
+      if (!title || !title.trim()) return;
+      const owner = prompt('负责人（Lead / market-analyst / product-builder / sales-strategist / delivery-qa）：', 'Lead') || 'Lead';
+      data.tasks.unshift({ id: uid('task'), title: title.trim(), owner: owner.trim(), status: 'todo', note: '' });
+      saveData(); renderAll();
+    });
+
+    document.getElementById('addMessageBtn').addEventListener('click', () => {
+      const text = prompt('记录一条团队消息：');
+      if (!text || !text.trim()) return;
+      data.messages.push({ id: uid('msg'), author: 'Lead', time: new Date().toLocaleString('zh-CN'), text: text.trim() });
+      saveData(); renderAll();
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'agent-team-board-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+    });
+
+    document.getElementById('board').addEventListener('change', (e) => {
+      const select = e.target.closest('select[data-status]');
+      if (!select) return;
+      const task = data.tasks.find((t) => t.id === select.dataset.status);
+      if (!task) return;
+      task.status = select.value; task.updatedAt = new Date().toISOString();
+      saveData(); renderAll();
+    });
+
+    document.getElementById('board').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-delete]');
+      if (!btn) return;
+      if (!confirm('确定删除这个任务？')) return;
+      data.tasks = data.tasks.filter((t) => t.id !== btn.dataset.delete);
+      saveData(); renderAll();
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
