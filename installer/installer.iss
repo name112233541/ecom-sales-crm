@@ -13,9 +13,6 @@ PrivilegesRequired=lowest
 UninstallDisplayIcon={app}\crm.ico
 SetupIconFile=crm.ico
 
-[Languages]
-Name: "chinesesimp"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
-
 [Files]
 Source: "crm.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "team.ico"; DestDir: "{app}"; Flags: ignoreversion
