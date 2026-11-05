@@ -1,0 +1,31 @@
+{
+  "name": "电商销售台",
+  "short_name": "电商销售台",
+  "description": "电商客户跟进、订单和成交复盘工作台",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "客户管理",
+      "short_name": "客户",
+      "url": "./?view=customers"
+    },
+    {
+      "name": "团队工作台",
+      "short_name": "团队",
+      "url": "./team.html"
+    }
+  ]
+}
