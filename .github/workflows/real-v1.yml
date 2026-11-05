@@ -1,0 +1,33 @@
+name: apply-real-v1
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Apply patch
+        run: node scripts/real-v1.mjs
+      - name: Rebuild single file
+        run: node build-single.mjs
+      - name: Static checks
+        run: node tests/static-check.mjs
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.js single.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: empty-data mode, CSV import, PWA install, team link [skip ci]"
+            git push
+          fi
