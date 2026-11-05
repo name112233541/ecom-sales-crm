@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>电商销售台 · Ecom Sales CRM</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#111827">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -32,10 +35,10 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="save-note">数据保存在当前浏览器</div>
+        <div class="save-note">数据只存在本机浏览器，请每天导出备份</div>
         <button type="button" class="ghost-dark" id="exportBtn">导出 JSON 备份</button>
         <button type="button" class="ghost-dark" id="importBtn">导入 JSON 备份</button>
-        <button type="button" class="ghost-dark danger-text" id="resetBtn">重置演示数据</button>
+        <button type="button" class="ghost-dark danger-text" id="resetBtn">清空全部数据</button>
         <input id="importFile" type="file" accept=".json,application/json" hidden>
       </div>
     </aside>
@@ -127,6 +130,8 @@
                 <option value="私域">私域</option>
                 <option value="其他">其他</option>
               </select>
+              <button type="button" class="btn small" id="importCsvBtn">导入 CSV</button>
+              <input id="importCsvFile" type="file" accept=".csv,text/csv" hidden>
               <button type="button" class="btn small" id="exportCsvBtn">导出 CSV</button>
             </div>
           </div>
