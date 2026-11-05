@@ -40,7 +40,7 @@ http://localhost:8080
 
 ## 数据说明
 
-- 数据保存在浏览器 `localStorage`，键名：`ecom_crm_mvp_v1`
+- 数据保存在浏览器 `localStorage`，键名：`ecom_crm_mvp_v2`
 - 换浏览器、清理浏览器数据后，数据不会自动同步
 - 重要数据请用“导出 JSON 备份”保存
 - JSON 导入会覆盖当前浏览器数据

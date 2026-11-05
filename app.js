@@ -1,6 +1,6 @@
 'use strict';
 
-const STORAGE_KEY = 'ecom_crm_mvp_v1';
+const STORAGE_KEY = 'ecom_crm_mvp_v2';
 
 const CUSTOMER_STATUS = {
   new: { label: '新线索', className: 'new' },
